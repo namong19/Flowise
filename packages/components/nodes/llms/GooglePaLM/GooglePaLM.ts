@@ -1,6 +1,8 @@
-import { ICommonObject, INode, INodeData, INodeParams } from '../../../src/Interface'
+import { GooglePaLM, GooglePaLMTextInput } from '@langchain/community/llms/googlepalm'
+import { BaseCache } from '@langchain/core/caches'
+import { ICommonObject, INode, INodeData, INodeOptionsValue, INodeParams } from '../../../src/Interface'
 import { getBaseClasses, getCredentialData, getCredentialParam } from '../../../src/utils'
-import { GooglePaLM, GooglePaLMTextInput } from 'langchain/llms/googlepalm'
+import { getModels, MODEL_TYPE } from '../../../src/modelLoader'
 
 class GooglePaLM_LLMs implements INode {
     label: string
@@ -17,9 +19,9 @@ class GooglePaLM_LLMs implements INode {
     constructor() {
         this.label = 'GooglePaLM'
         this.name = 'GooglePaLM'
-        this.version = 1.0
+        this.version = 3.0
         this.type = 'GooglePaLM'
-        this.icon = 'Google_PaLM_Logo.svg'
+        this.icon = 'GooglePaLM.svg'
         this.category = 'LLMs'
         this.description = 'Wrapper around Google MakerSuite PaLM large language models'
         this.baseClasses = [this.type, ...getBaseClasses(GooglePaLM)]
@@ -31,17 +33,17 @@ class GooglePaLM_LLMs implements INode {
         }
         this.inputs = [
             {
+                label: 'Cache',
+                name: 'cache',
+                type: 'BaseCache',
+                optional: true
+            },
+            {
                 label: 'Model Name',
                 name: 'modelName',
-                type: 'options',
-                options: [
-                    {
-                        label: 'models/text-bison-001',
-                        name: 'models/text-bison-001'
-                    }
-                ],
-                default: 'models/text-bison-001',
-                optional: true
+                type: 'asyncOptions',
+                loadMethod: 'listModels',
+                default: 'models/text-bison-001'
             },
             {
                 label: 'Temperature',
@@ -119,6 +121,13 @@ class GooglePaLM_LLMs implements INode {
         ]
     }
 
+    //@ts-ignore
+    loadMethods = {
+        async listModels(): Promise<INodeOptionsValue[]> {
+            return await getModels(MODEL_TYPE.LLM, 'GooglePaLM')
+        }
+    }
+
     async init(nodeData: INodeData, _: string, options: ICommonObject): Promise<any> {
         const modelName = nodeData.inputs?.modelName as string
         const temperature = nodeData.inputs?.temperature as string
@@ -126,6 +135,7 @@ class GooglePaLM_LLMs implements INode {
         const topP = nodeData.inputs?.topP as string
         const topK = nodeData.inputs?.topK as string
         const stopSequencesObj = nodeData.inputs?.stopSequencesObj
+        const cache = nodeData.inputs?.cache as BaseCache
 
         const credentialData = await getCredentialData(nodeData.credential ?? '', options)
         const googleMakerSuiteKey = getCredentialParam('googleMakerSuiteKey', credentialData, nodeData)
@@ -139,6 +149,7 @@ class GooglePaLM_LLMs implements INode {
         if (maxOutputTokens) obj.maxOutputTokens = parseInt(maxOutputTokens, 10)
         if (topP) obj.topP = parseFloat(topP)
         if (topK) obj.topK = parseFloat(topK)
+        if (cache) obj.cache = cache
 
         let parsedStopSequences: any | undefined = undefined
         if (stopSequencesObj) {

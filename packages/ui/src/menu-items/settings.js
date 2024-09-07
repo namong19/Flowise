@@ -1,8 +1,26 @@
 // assets
-import { IconTrash, IconFileUpload, IconFileExport, IconCopy, IconSearch } from '@tabler/icons'
+import {
+    IconTrash,
+    IconFileUpload,
+    IconFileExport,
+    IconCopy,
+    IconMessage,
+    IconDatabaseExport,
+    IconAdjustmentsHorizontal,
+    IconUsers
+} from '@tabler/icons-react'
 
 // constant
-const icons = { IconTrash, IconFileUpload, IconFileExport, IconCopy, IconSearch }
+const icons = {
+    IconTrash,
+    IconFileUpload,
+    IconFileExport,
+    IconCopy,
+    IconMessage,
+    IconDatabaseExport,
+    IconAdjustmentsHorizontal,
+    IconUsers
+}
 
 // ==============================|| SETTINGS MENU ITEMS ||============================== //
 
@@ -11,6 +29,34 @@ const settings = {
     title: '',
     type: 'group',
     children: [
+        {
+            id: 'viewMessages',
+            title: 'View Messages',
+            type: 'item',
+            url: '',
+            icon: icons.IconMessage
+        },
+        {
+            id: 'viewLeads',
+            title: 'View Leads',
+            type: 'item',
+            url: '',
+            icon: icons.IconUsers
+        },
+        {
+            id: 'viewUpsertHistory',
+            title: 'Upsert History',
+            type: 'item',
+            url: '',
+            icon: icons.IconDatabaseExport
+        },
+        {
+            id: 'chatflowConfiguration',
+            title: 'Configuration',
+            type: 'item',
+            url: '',
+            icon: icons.IconAdjustmentsHorizontal
+        },
         {
             id: 'duplicateChatflow',
             title: 'Duplicate Chatflow',
@@ -31,13 +77,6 @@ const settings = {
             type: 'item',
             url: '',
             icon: icons.IconFileExport
-        },
-        {
-            id: 'analyseChatflow',
-            title: 'Analyse Chatflow',
-            type: 'item',
-            url: '',
-            icon: icons.IconSearch
         },
         {
             id: 'deleteChatflow',
